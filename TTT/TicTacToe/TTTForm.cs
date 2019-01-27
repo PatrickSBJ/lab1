@@ -16,7 +16,11 @@ namespace TicTacToe
         {
             InitializeComponent();
         }
-        string[,] board = new string[5, 5];
+        string[,] board = { { "", "", "", "", ""},
+                            { "", "", "", "", ""},
+                            { "", "", "", "", ""},
+                            { "", "", "", "", ""},
+                            { "", "", "", "", ""}};
 
         const string USER_SYMBOL = "X";
         const string COMPUTER_SYMBOL = "O";
@@ -57,77 +61,72 @@ namespace TicTacToe
         // the row on the form contains 5 Xs or 5 Os.
         // Use it as a model for writing IsColumnWinner
         private bool IsRowWinner(int row)
-        {
-
-            for (int col = 0; col < SIZE; col++)
-            {
-                string symbol = board[row, col];
-                if (symbol == EMPTY)
-                    return false;
-            }
-            return true;
+        { 
+                if (board[row, 0] == board[row, 1] && board[row, 1] == board[row, 2]
+                    && board[row, 2] == board[row, 3] && board[row, 3] == board[row, 4]
+                    && board[row, 0] != EMPTY)
+                    return true;
+            
+            return false;
         }
-
+        
         //* TODO:  finish all of these that return true
         private bool IsAnyRowWinner()
         {
             for (int row = 0; row < SIZE; row++)
             {
-                for (int col = 0; col < SIZE; col++)
-                {
-                    string symbol = board[row, col];
-                    if (symbol == EMPTY)
-                        return false;
-                }
+                if (board[row, 0] == board[row, 1] && board[row, 1] == board[row, 2]
+                && board[row, 2] == board[row, 3] && board[row, 3] == board[row, 4]
+                && board[row, 0] != EMPTY)
+                    return true;
             }
-            return true;
+            return false;
         }
 
         private bool IsColumnWinner(int col)
         {
-            for (int row = 0; row < SIZE; row++)
-            {
-                string symbol = board[row, col];
-                if (symbol == EMPTY)
-                    return false;
-            }
-            return true;
+            
+                if (board[0, col] == board[1, col] && board[1, col] == board[2, col]
+                    && board[2, col] == board[3, col] && board[3, col] == board[4, col]
+                    && board[0, col] != EMPTY)
+                    return true;
+            
+            return false;
         }
 
         private bool IsAnyColumnWinner()
         {
             for (int col = 0; col < SIZE; col++)
             {
-                for (int row = 0; row < SIZE; row++)
-                {
-                    string symbol = board[row, col];
-                    if (symbol == EMPTY)
-                        return false;
-                }
+                
+                   if (board[0, col] == board[1, col] && board[1, col] == board[2, col]
+                   && board[2, col] == board[3, col] && board[3, col] == board[4, col]
+                   && board[0, col] != EMPTY)
+                        return true;
+                
             }
-            return true;
+            return false;
         }
 
         private bool IsDiagonal1Winner()
         {
-            for (int row = 0, col = 0; row < SIZE; row++, col++)
-            {
-                string symbol = board[row, col];
-                if (symbol == EMPTY)
-                    return false;
-            }
-            return true;
+            
+                if (board[0, 0] == board[1, 1] && board[1, 1] == board[2, 2] && board[2, 2] == board[3, 3]
+                    && board[3, 3] == board[4, 4] && board[0, 0] != EMPTY)
+                    return true;
+       
+            
+            return false;
         }
 
         private bool IsDiagonal2Winner()
         {
-            for (int row = 0, col = 4; row < SIZE; row++, col--)
-            {
-                string symbol = board[row, col];
-                if (symbol == EMPTY)
-                    return false;
-            }
-            return true;
+            
+                if (board[0, 4] == board[1, 3] && board[1, 3] == board[3, 3] && board[3, 3] == board[3, 1]
+                     && board[3, 1] == board[4, 0] && board[0, 4] != EMPTY)
+                    return true;
+            
+            return false;
         }
 
         private bool IsAnyDiagonalWinner()
@@ -163,6 +162,7 @@ namespace TicTacToe
                     return true;
                 }
             }
+           
             // columns
             for (int column = 0; column < SIZE; column++)
             {
@@ -186,6 +186,7 @@ namespace TicTacToe
                 whichOne = TOP_RIGHT_TO_BOTTOM_LEFT;
                 return true;
             }
+            
             whichDimension = NONE;
             whichOne = NONE;
             return false;
@@ -217,21 +218,23 @@ namespace TicTacToe
             Random gen = new Random();
             int row;
             int column;
-            string square;
-            
+            Label square;
+
 
 
             do
-            {
-                row = gen.Next(0, SIZE);
-                column = gen.Next(0, SIZE);
+             {
+                 row = gen.Next(0, SIZE);
+                 column = gen.Next(0, SIZE);
 
-                square = board[row, column];
-                
-            } while (square != EMPTY);
-            board[row, column] = COMPUTER_SYMBOL;
-            Label squareLabel = GetSquare(row, column);
-            DisableSquare(squareLabel);
+                 square = GetSquare(row, column);
+
+                 board[row, column] = COMPUTER_SYMBOL;
+
+
+             } while (board[row, column] == EMPTY);
+            SyncArrayAndSquares();
+             
         }
 
         // ALL OF THESE METHODS MANIPULATE THE UI AND SHOULDN'T CHANGE
@@ -363,9 +366,12 @@ namespace TicTacToe
                 for (int col = 0; col < SIZE; col++)
                 {
                     Label square = GetSquare(row, col);
-                    square.Text = board[row, col];
+                     
+                    GetRowAndColumn(square, out int rowOf, out int column);
 
-                    if(board[row, col] == EMPTY)
+                    square.Text = board[row, column];
+
+                    if (board[rowOf, column] != EMPTY)
                     {
                         DisableSquare(square);
                     }
@@ -385,6 +391,7 @@ namespace TicTacToe
             GetRowAndColumn(clickedLabel, out int row, out int column);
             board[row, column] = USER_SYMBOL;
             DisableSquare(clickedLabel);
+            
 
             if (IsWinner(out winningDimension, out winningValue))
             {
@@ -398,8 +405,7 @@ namespace TicTacToe
             }
             else
             {
-                MakeComputerMove();
-               
+                MakeComputerMove();           
 
                 if (IsWinner(out winningDimension, out winningValue))
                 {
@@ -412,7 +418,7 @@ namespace TicTacToe
                     DisableAllSquares();
                 }
             }
-            //SyncArrayAndSquares();
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
